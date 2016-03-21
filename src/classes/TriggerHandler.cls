@@ -85,37 +85,84 @@ public virtual class TriggerHandler {
 	public static void clearAllBypasses() {
 		TriggerHandler.bypassedHandlers.clear();
 	}
-
-	public static Map<String, List<sObject>> getInheritanceObjectMap(String objectName, String callType, List<sObject> objs) {
-		Map<String, List<sObject>> retMap = new Map<String,List<sObject>>();
-		List<Inheritance_Setting__mdt> settings = [SELECT DeveloperName, Object__c, Type__c, Record_Types__c FROM Inheritance_Setting__mdt WHERE Object__c =: objectName AND Type__c =: callType];
-		for (sObject sObj : objs)
-		{
-			for (Inheritance_Setting__mdt inhSet : settings)
-			{
-				List<String> recordTypes = inhSet.Record_Types__c.split(',');
-				for (String recordTypeName : recordTypes)
-				{
-					Id devRecordTypeId = Schema.describeSObjects(new String[]{objectName})[0].getRecordTypeInfosByName().get(recordTypeName).getRecordTypeId();
-					if (sObj.get('recordTypeId') == devRecordTypeId)
-					{
-						List<sObject> sObjList = new List<sObject>();
-						if (retMap.containsKey(inhSet.DeveloperName))
-						{
-							sObjList = retMap.get(inhSet.DeveloperName);
-						}
-						sObjList.add(sObj);
-						retMap.put(inhSet.DeveloperName,sObjList);
-					}
+	
+	public static Map<String,List<sObject>> newInheritanceMap;
+	public static Map<String,Map<Id,sObject>> oldInheritanceMap;
+	public static void getInheritanceObjectMap(String objectName, String callType, List<sObject> newObjs, Map<Id,sObject> oldObjs, boolean isDeleteContext) {
+		newInheritanceMap = new Map<String,List<sObject>>();
+		oldInheritanceMap = new Map<String,Map<Id,sObject>>();
+		if(isDeleteContext){
+			mapInheretanceSetting(objectName, callType, oldObjs.values(), true);
+		}else{
+			mapInheretanceSetting(objectName, callType, newObjs, false);
+		}
+		if(newObjs != NULL && oldObjs != NULL){
+			for(String s : newInheritanceMap.keySet()){
+				List<sObject> tempList = new List<sObject>();
+				for (sObject sObj : newInheritanceMap.get(s)){
+					tempList.add(oldObjs.get(sObj.id));
 				}
+				Map<Id,sObject> tempMap = new Map<Id,sObject>(tempList); 
+				oldInheritanceMap.put(s,tempMap);
 			}
 		}
-		return retMap;
 	}
 
 	/***************************************
 	 * private instancemethods
 	 ***************************************/
+
+	 private static void mapInheretanceSetting(String objectName, String callType, List<sObject> sObjs, boolean isDeleteContext){
+		List<Inheritance_Setting__mdt> settings = [SELECT DeveloperName, Object__c, Type__c, Record_Type_1__c, Record_Type_2__c, Record_Type_3__c, Record_Type_4__c, Record_Type_5__c, Record_Type_6__c FROM Inheritance_Setting__mdt WHERE Object__c =: objectName AND Type__c =: callType];
+		Map<Id,RecordType> recTypeMap = RecordTypeDAO.getAllRecordTypes().get(objectName);
+		Map<String,String> recordTypeNameToClass = buildRT2NameMap(settings);
+		for (sObject sObj : sObjs){
+			String applicableClass = recordTypeNameToClass.get(recTypeMap.get((id)sObj.get('recordTypeId')).DeveloperName);
+			if (applicableClass != NULL)
+			{
+			List<sObject> newsObjList = new List<sObject>();
+			Map<Id,sObject> oldsObjMap = new Map<Id,sObject>();
+			if(isDeleteContext){
+				if (oldInheritanceMap.containsKey(applicableClass)){
+					oldsObjMap = oldInheritanceMap.get(applicableClass);
+				}
+				oldsObjMap.put(sObj.Id,sObj);
+				oldInheritanceMap.put(applicableClass,oldsObjMap);
+			}else{
+				if (newInheritanceMap.containsKey(applicableClass)){
+					newsObjList = newInheritanceMap.get(applicableClass);
+				}
+				newsObjList.add(sObj);
+				newInheritanceMap.put(applicableClass,newsObjList);
+				}
+			}
+		}
+	 }
+
+	 private static Map<String,String> buildRT2NameMap(List<Inheritance_Setting__mdt> settings){
+		Map<String,String> tempMap = new Map<String,String>();
+		for (Inheritance_Setting__mdt inhSet : settings){
+			if (inhSet.Record_Type_1__c != NULL){
+				tempMap.put(inhSet.Record_Type_1__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_2__c != NULL){
+				tempMap.put(inhSet.Record_Type_2__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_3__c != NULL){
+				tempMap.put(inhSet.Record_Type_3__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_4__c != NULL){
+				tempMap.put(inhSet.Record_Type_4__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_5__c != NULL){
+				tempMap.put(inhSet.Record_Type_5__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_6__c != NULL){
+				tempMap.put(inhSet.Record_Type_6__c,inhSet.DeveloperName);
+			}
+		}
+		return tempMap;
+	 }
 
 	@TestVisible
 	private void setTriggerContext() {
