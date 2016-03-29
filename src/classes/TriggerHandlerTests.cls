@@ -1,14 +1,14 @@
 @isTest
-private class TriggerHandler_Test {
+private class TriggerHandlerTests {
 
   private static final String TRIGGER_CONTEXT_ERROR = 'Trigger handler called outside of Trigger execution';
 
   private static String lastMethodCalled;
 
-  private static TriggerHandler_Test.TestHandler handler;
+  private static TriggerHandlerTests.TestHandler handler;
 
   static {
-    handler = new TriggerHandler_Test.TestHandler();
+    handler = new TriggerHandlerTests.TestHandler();
     // override its internal trigger detection
     handler.isTriggerExecuting = true;
   }
@@ -245,31 +245,31 @@ private class TriggerHandler_Test {
   private class TestHandler extends TriggerHandler {
 
     public override void beforeInsert() {
-      TriggerHandler_Test.lastMethodCalled = 'beforeInsert';
+      TriggerHandlerTests.lastMethodCalled = 'beforeInsert';
     }
 
     public override void  beforeUpdate() {
-      TriggerHandler_Test.lastMethodCalled = 'beforeUpdate';
+      TriggerHandlerTests.lastMethodCalled = 'beforeUpdate';
     }
 
     public override void beforeDelete() {
-      TriggerHandler_Test.lastMethodCalled = 'beforeDelete';
+      TriggerHandlerTests.lastMethodCalled = 'beforeDelete';
     }
 
     public override void afterInsert() {
-      TriggerHandler_Test.lastMethodCalled = 'afterInsert';
+      TriggerHandlerTests.lastMethodCalled = 'afterInsert';
     }
 
     public override void afterUpdate() {
-      TriggerHandler_Test.lastMethodCalled = 'afterUpdate';
+      TriggerHandlerTests.lastMethodCalled = 'afterUpdate';
     }
 
     public override void afterDelete() {
-      TriggerHandler_Test.lastMethodCalled = 'afterDelete';
+      TriggerHandlerTests.lastMethodCalled = 'afterDelete';
     }
 
     public override void afterUndelete() {
-      TriggerHandler_Test.lastMethodCalled = 'afterUndelete';
+      TriggerHandlerTests.lastMethodCalled = 'afterUndelete';
     }
 
   }

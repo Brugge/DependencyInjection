@@ -117,7 +117,12 @@ public virtual class TriggerHandler {
 		Map<Id,RecordType> recTypeMap = RecordTypeDAO.getAllRecordTypes().get(objectName);
 		Map<String,String> recordTypeNameToClass = buildRT2NameMap(settings);
 		for (sObject sObj : sObjs){
-			String applicableClass = recordTypeNameToClass.get(recTypeMap.get((id)sObj.get('recordTypeId')).DeveloperName);
+			String applicableClass = NULL ;
+			if (settings.size() == 1) {
+				applicableClass = settings[0].DeveloperName;
+			} else {
+				applicableClass = recordTypeNameToClass.get(recTypeMap.get((id) sObj.get('recordTypeId')).DeveloperName);
+			}
 			if (applicableClass != NULL)
 			{
 			List<sObject> newsObjList = new List<sObject>();
