@@ -113,11 +113,15 @@ public virtual class TriggerHandler {
 	 ***************************************/
 
 	 private static void mapInheretanceSetting(String objectName, String callType, List<sObject> sObjs, boolean isDeleteContext){
-		List<Inheritance_Setting__mdt> settings = [SELECT DeveloperName, Object__c, Type__c, Record_Type_1__c, Record_Type_2__c, Record_Type_3__c, Record_Type_4__c, Record_Type_5__c, Record_Type_6__c FROM Inheritance_Setting__mdt WHERE Object__c =: objectName AND Type__c =: callType];
+		List<Inheritance_Setting__mdt> settings = [SELECT DeveloperName, Object__c, Type__c, Record_Type_1__c, Record_Type_2__c, Record_Type_3__c, Record_Type_4__c, Record_Type_5__c, Record_Type_6__c, Record_Type_7__c,
+                                                   Record_Type_8__c, Record_Type_9__c, Record_Type_10__c, Record_Type_11__c, Record_Type_12__c, Record_Type_13__c, Record_Type_14__c
+                                                   FROM Inheritance_Setting__mdt 
+                                                   WHERE Object__c =: objectName 
+                                                   AND Type__c =: callType];
 		Map<Id,RecordType> recTypeMap = RecordTypeDAO.getAllRecordTypes().get(objectName);
 		Map<String,String> recordTypeNameToClass = buildRT2NameMap(settings);
 		for (sObject sObj : sObjs){
-			String applicableClass = NULL ;
+			String applicableClass = NULL;
 			if (settings.size() == 1) {
 				applicableClass = settings[0].DeveloperName;
 			} else {
@@ -165,6 +169,30 @@ public virtual class TriggerHandler {
 			if (inhSet.Record_Type_6__c != NULL){
 				tempMap.put(inhSet.Record_Type_6__c,inhSet.DeveloperName);
 			}
+			if (inhSet.Record_Type_7__c != NULL){
+				tempMap.put(inhSet.Record_Type_7__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_8__c != NULL){
+				tempMap.put(inhSet.Record_Type_8__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_9__c != NULL){
+				tempMap.put(inhSet.Record_Type_9__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_10__c != NULL){
+				tempMap.put(inhSet.Record_Type_10__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_11__c != NULL){
+				tempMap.put(inhSet.Record_Type_11__c,inhSet.DeveloperName);
+			}
+			if (inhSet.Record_Type_12__c != NULL){
+				tempMap.put(inhSet.Record_Type_12__c,inhSet.DeveloperName);
+			} 
+			if (inhSet.Record_Type_13__c != NULL){
+				tempMap.put(inhSet.Record_Type_13__c,inhSet.DeveloperName);
+			}   
+			if (inhSet.Record_Type_14__c != NULL){
+				tempMap.put(inhSet.Record_Type_14__c,inhSet.DeveloperName);
+			}           
 		}
 		return tempMap;
 	 }
