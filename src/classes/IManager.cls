@@ -5,5 +5,5 @@ public interface IManager {
 	void afterInsert(List<sObject> newObjList);
 	void afterUpdate(List<sObject> newObjList, Map<Id,sObject> oldObjMap);
 	void afterDelete(Map<Id,sObject> oldObjMap);
-	void afterUndelete();
+	void afterUndelete(List<Id,sObject> newObjList);
 }

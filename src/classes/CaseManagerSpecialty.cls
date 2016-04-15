@@ -47,8 +47,10 @@ public class CaseManagerSpecialty implements IManager
 		// Applicable Code Calls here
 	}
 
-	public static void afterUndelete()
+	public static void afterUndelete(List<sObject> newObjList)
 	{
-		// We are not using this anywhere yet and are not worrying about it.
+		List<Case> newCaseList = (List<Case>) newObjList;
+		Map<Id, Case> newCaseMap = new Map<Id, Case> (newCaseList);
+		// This should be calls to Domain classes (ex. Cases.<Method Name>, CasePayees.<MethodName>, etc.)
 	}
 }
